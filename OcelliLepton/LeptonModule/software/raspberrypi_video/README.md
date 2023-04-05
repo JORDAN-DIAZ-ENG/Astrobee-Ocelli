@@ -1,3 +1,8 @@
+For v4l2 to work do this command:
+```
+sudo modprobe v4l2loopback video_nr=0 card_label="lepton" exclusive_caps=1 max_buffers=3
+```
+
 This example is meant for Raspberry Pi, Pi2, Pi3, PiZero, & Pi4 and has been tested with Raspbian.
 
 First enable the SPI and I2C interfaces on the Pi.
