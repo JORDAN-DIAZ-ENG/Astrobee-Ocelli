@@ -1,3 +1,23 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>                /* low-level i/o */
+#include <unistd.h>
+#include <signal.h>
+#include <errno.h>
+#include <malloc.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/ioctl.h>
+#include <linux/videodev2.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <iostream>
+#include <fstream>
+#include <ctime>
+#include <stdint.h>
+
 #include <iostream>
 
 #include "LeptonThread.h"
@@ -106,6 +126,34 @@ void LeptonThread::useRangeMaxValue(uint16_t newMaxValue)
 
 void LeptonThread::run()
 {
+	//video for linux
+	char const *v4l2dev = "/dev/video0";
+	int v4l2sink = -1;
+	char *vidsendbuf = NULL;
+	int vidsendsiz = 0;
+	
+	v4l2sink = open(v4l2dev, O_WRONLY);
+    if (v4l2sink < 0) {
+        fprintf(stderr, "Failed to open v4l2sink device. (%s)\n", strerror(errno));
+        exit(-2);
+    }
+    // setup video for proper format
+    struct v4l2_format v;
+    int t;
+    v.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
+    t = ioctl(v4l2sink, VIDIOC_G_FMT, &v);
+    if( t < 0 )
+        exit(t);
+    v.fmt.pix.width = myImageWidth;
+    v.fmt.pix.height = myImageHeight;
+    v.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
+    vidsendsiz = myImageWidth * myImageHeight * 3;
+    v.fmt.pix.sizeimage = vidsendsiz;
+    t = ioctl(v4l2sink, VIDIOC_S_FMT, &v);
+    if( t < 0 )
+        exit(t);
+    vidsendbuf = (char*)malloc( vidsendsiz );	
+	
 	//create the initial image
 	myImage = QImage(myImageWidth, myImageHeight, QImage::Format_RGB888);
 
@@ -273,6 +321,12 @@ void LeptonThread::run()
 					column = (i % PACKET_SIZE_UINT16) - 2;
 					row = i / PACKET_SIZE_UINT16;
 				}
+				
+				int idx = row * myImageWidth * 3 + column * 3;
+				vidsendbuf[idx + 0] = colormap[ofs_r];
+				vidsendbuf[idx + 1] = colormap[ofs_g];
+				vidsendbuf[idx + 2] = colormap[ofs_b];
+
 				myImage.setPixel(column, row, color);
 			}
 		}
@@ -281,9 +335,13 @@ void LeptonThread::run()
 			log_message(8, "[WARNING] Found zero-value. Drop the frame continuously " + std::to_string(n_zero_value_drop_frame) + " times [RECOVERED]");
 			n_zero_value_drop_frame = 0;
 		}
+		
+		//write video to v4l2 device
+		write(v4l2sink, vidsendbuf, vidsendsiz);
+
 
 		//lets emit the signal for update
-		emit updateImage(myImage);
+		//emit updateImage(myImage);
 		
 		//show temp Jordan Diaz
 		std::cout << "Average Temp: " << temperatureSum / (row * column) << "/t Max Temp: " << max <<std::endl;
