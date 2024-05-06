@@ -17,6 +17,7 @@ Ocelli operates in the following environment:
 
 ## Calibration
 Before running Ocelli, it's crucial to calibrate the Lepton 3.5 thermal camera and Kinect v2 depth sensor for accurate data alignment. This is achieved by capturing images of a checkerboard pattern and generating a YAML file containing the calibration parameters.
+![Ocelli Thermal Camera Calibration](https://github.com/JORDAN-DIAZ-ENG/Astrobee-Ocelli/assets/30423497/12484175-85b4-48d2-810c-591e0dd4a252)
 
 ## Usage
 1. Connect the Lepton 3.5 thermal camera to the Raspberry Pi and ensure it's streaming data.
