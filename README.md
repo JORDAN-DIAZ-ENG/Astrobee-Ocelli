@@ -17,6 +17,7 @@ Ocelli operates in the following environment:
 
 ## Calibration
 Before running Ocelli, it's crucial to calibrate the Lepton 3.5 thermal camera and Kinect v2 depth sensor for accurate data alignment. This is achieved by capturing images of a checkerboard pattern and generating a YAML file containing the calibration parameters.
+
 ![Ocelli Thermal Camera Calibration](https://github.com/JORDAN-DIAZ-ENG/Astrobee-Ocelli/assets/30423497/12484175-85b4-48d2-810c-591e0dd4a252)
 
 ## Usage
@@ -32,3 +33,5 @@ Before running Ocelli, it's crucial to calibrate the Lepton 3.5 thermal camera a
 
 ## Thanks For Reading
 ![matheus point cloud heat map](https://github.com/JORDAN-DIAZ-ENG/Astrobee-Ocelli/assets/30423497/370c46bb-f8ec-4550-ba90-c5e43d3f6b21)
+![Ocelli Prototype Presentation](https://github.com/JORDAN-DIAZ-ENG/Astrobee-Ocelli/assets/30423497/c3d72392-567f-40b1-b66f-ab47070d80cd)
+
